@@ -1,0 +1,1 @@
+﻿{"List":[{"Id":1001,"DecStr":"\u73A9\u5BB6\u666E\u901A\u653B\u51FB1","TriggerTime":0.0,"ContinueTime":0.0,"Area":"(1.0, 1.0)","Data":[{"Time":0.0,"ContinueTime":0.0,"GapTime":0.0,"Type":0,"UseType":3,"DataType":0,"Data":"-10"}],"Effects":[{"Time":0.0,"Pos":"(0.4, 0.0, 0.0)","EffectId":1002}],"Audios":[],"AnimClips":[{"Time":0.0,"AnimName":"Player_Idle_New"}],"ExSkills":[]}]}

@@ -1,0 +1,1 @@
+﻿{"EntityReqWeight":[{"Key":1,"Weight":-99},{"Key":2,"Weight":-99},{"Key":0,"Weight":0},{"Key":3,"Weight":1},{"Key":4,"Weight":0},{"Key":5,"Weight":0}],"WorldReqWeight":[{"Key":0,"Weight":0}]}
