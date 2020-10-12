@@ -1,8 +1,10 @@
-﻿using LCECS.Core.Tree.Base;
+﻿using LCECS;
+using LCECS.Core.Tree.Base;
 using LCECS.Data;
 using LCECS.Layer.Behavior;
+using System;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 /// <summary>
 /// 行为中心：
@@ -13,6 +15,54 @@ public class BehaviorCenter {
 
     private Dictionary<int, BaseEntityBehavior> EntityBevDict = new Dictionary<int, BaseEntityBehavior>();
     private Dictionary<int, BaseWorldBehavior> WorldBevDict = new Dictionary<int, BaseWorldBehavior>();
+
+    public void Init()
+    {
+        TextAsset jsonData = ECSLocate.Factory.GetProduct<TextAsset>(FactoryType.Asset, null, ECSDefinitionPath.BevTreePath);
+        BevTrees bevTrees = LitJson.JsonMapper.ToObject<BevTrees>(jsonData.text);
+        SetBevTrees(bevTrees);
+    }
+
+    //设置行为树
+    private void SetBevTrees(BevTrees trees)
+    {
+        if (trees == null)
+            return;
+
+        CreateBev(trees);
+    }
+
+    //创建行为树
+    private void CreateBev(BevTrees BevTrees)
+    {
+        //实体
+        foreach (string key in BevTrees.EntityTrees.Keys)
+        {
+            EntityReqId reqId = (EntityReqId)Enum.Parse(typeof(EntityReqId), key);
+
+            //创建树
+            NodeDataJson nodeJson = BevTrees.EntityTrees[key];
+            Node rootNode = Node.CreateNodeInstance(nodeJson);
+            Node.CreateNodeRelation(rootNode, nodeJson.ChildNodes);
+
+            BaseEntityBehavior request = new BaseEntityBehavior(rootNode);
+            EntityBevDict.Add((int)reqId, request);
+        }
+
+        //世界
+        foreach (string key in BevTrees.WorldTrees.Keys)
+        {
+            WorldReqId reqId = (WorldReqId)Enum.Parse(typeof(WorldReqId), key);
+
+            //创建树
+            NodeDataJson nodeJson = BevTrees.WorldTrees[key];
+            Node rootNode = Node.CreateNodeInstance(nodeJson);
+            Node.CreateNodeRelation(rootNode, nodeJson.ChildNodes);
+
+            BaseWorldBehavior request = new BaseWorldBehavior(rootNode);
+            WorldBevDict.Add((int)reqId, request);
+        }
+    }
 
     /// <summary>
     /// 获得实体行为
@@ -36,30 +86,6 @@ public class BehaviorCenter {
             return WorldBevDict[bevId];
         }
         return null;
-    }
-
-    /// <summary>
-    /// 添加实体行为
-    /// </summary>
-    public void RegEntityBev(int bevId, BaseEntityBehavior bev)
-    {
-        if (EntityBevDict.ContainsKey(bevId))
-        {
-            return;
-        }
-        EntityBevDict.Add(bevId, bev);
-    }
-
-    /// <summary>
-    /// 添加世界行为
-    /// </summary>
-    public void RegWorldBev(int bevId, BaseWorldBehavior bev)
-    {
-        if (WorldBevDict.ContainsKey(bevId))
-        {
-            return;
-        }
-        WorldBevDict.Add(bevId, bev);
     }
 
     /// <summary>

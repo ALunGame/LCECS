@@ -1,9 +1,11 @@
 ﻿using LCECS.Core.ECS;
+using LCECS.Core.Tree.Base;
 using LCECS.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace LCECS.Layer.Decision
 {
@@ -17,9 +19,54 @@ namespace LCECS.Layer.Decision
         private Dictionary<int, BaseEntityDecision> EntityDesDict = new Dictionary<int, BaseEntityDecision>();
         private Dictionary<int, BaseWorldDecision> WorldDesDict = new Dictionary<int, BaseWorldDecision>();
 
-        /// <summary>
-        /// 添加实体决策器
-        /// </summary>
+        public void Init()
+        {
+            TextAsset jsonData = ECSLocate.Factory.GetProduct<TextAsset>(FactoryType.Asset, null, ECSDefinitionPath.DecTreePath);
+            DecTrees decTrees = LitJson.JsonMapper.ToObject<DecTrees>(jsonData.text);
+            SetDecTrees(decTrees);
+        }
+
+        //设置决策树
+        private void SetDecTrees(DecTrees trees)
+        {
+            if (trees == null)
+                return;
+            CreateDec(trees);
+        }
+
+        //创建决策
+        private void CreateDec(DecTrees DecTrees)
+        {
+            //实体
+            foreach (string key in DecTrees.EntityTrees.Keys)
+            {
+                EntityDecGroup group = (EntityDecGroup)Enum.Parse(typeof(EntityDecGroup), key);
+
+                //创建树
+                NodeDataJson nodeJson = DecTrees.EntityTrees[key];
+                Node rootNode = Node.CreateNodeInstance(nodeJson);
+                Node.CreateNodeRelation(rootNode, nodeJson.ChildNodes);
+
+                BaseEntityDecision decision = new BaseEntityDecision(rootNode); ;
+                EntityDesDict.Add((int)group, decision);
+            }
+
+            //世界
+            foreach (string key in DecTrees.WorldTrees.Keys)
+            {
+                WorldDecGroup group = (WorldDecGroup)Enum.Parse(typeof(WorldDecGroup), key);
+
+                //创建树
+                NodeDataJson nodeJson = DecTrees.WorldTrees[key];
+                Node rootNode = Node.CreateNodeInstance(nodeJson);
+                Node.CreateNodeRelation(rootNode, nodeJson.ChildNodes);
+
+                BaseWorldDecision decision = new BaseWorldDecision(rootNode);
+                WorldDesDict.Add((int)group, decision);
+            }
+        }
+
+        //添加实体决策器
         public void RegEntityDecision(int decId, BaseEntityDecision decision)
         {
             if (EntityDesDict.ContainsKey(decId))

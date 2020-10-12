@@ -3,7 +3,7 @@ using Demo.Config;
 using Demo.Help;
 using LCECS;
 using LCECS.Core.ECS;
-using LCECS.Help;
+using LCHelp;
 using LCSkill;
 using System;
 using System.Collections.Generic;
@@ -113,7 +113,7 @@ namespace Demo.System
             {
                 com.CurrShowEffectId = effect.EffectId;
                 com.EntityId = skillCom.EntityId;
-                com.ShowPos = (Vector3)ReflectHelp.StrChangeToObject(effect.Pos,typeof(Vector3).FullName);
+                com.ShowPos = (Vector3)LCConvert.StrChangeToObject(effect.Pos,typeof(Vector3).FullName);
             });
         }
 

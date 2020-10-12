@@ -1,6 +1,9 @@
 ﻿using LCECS.Core.ECS;
 using LCECS.Data;
+using LCHelp;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace LCECS.Layer.Info
 {
@@ -23,18 +26,70 @@ namespace LCECS.Layer.Info
         private Dictionary<int, EntityWorkData> EntityWorkDataDict = new Dictionary<int, EntityWorkData>();
         private Dictionary<int, WorldWorkData> WorldWorkDataDict = new Dictionary<int, WorldWorkData>();
 
-        public void RegWorldSensor(int key, IWorldSensor sensor)
+        private EntityJsonList entityJsons = null;
+
+        public void Init()
         {
-            if (WorldSensorDict.ContainsKey(key))
-                return;
-            WorldSensorDict.Add(key, sensor);
+            TextAsset jsonData = ECSLocate.Factory.GetProduct<TextAsset>(FactoryType.Asset, null, ECSDefinitionPath.EntityJsonPath);
+            EntityJsonList entityJsons = LitJson.JsonMapper.ToObject<EntityJsonList>(jsonData.text);
+            SetEntityConf(entityJsons);
+            RegAllSensor();
         }
 
-        public void RegEntitySensor(int key, IEntitySensor sensor)
+        private void SetEntityConf(EntityJsonList json)
         {
-            if (EntitySensorDict.ContainsKey(key))
+            entityJsons = json;
+        }
+
+        public EntityJson GetEntityConf(string entityName)
+        {
+            if (entityJsons == null)
+                return null;
+            for (int i = 0; i < entityJsons.List.Count; i++)
+            {
+                EntityJson json = entityJsons.List[i];
+                if (json.EntityName == entityName)
+                {
+                    return json;
+                }
+            }
+            return null;
+        }
+
+        private void RegAllSensor()
+        {
+            List<Type> worldSensorTypes = LCReflect.GetInterfaceByType<IWorldSensor>();
+            List<Type> entitySensorTypes = LCReflect.GetInterfaceByType<IEntitySensor>();
+            if (worldSensorTypes == null && entitySensorTypes == null)
                 return;
-            EntitySensorDict.Add(key, sensor);
+
+            //世界信息
+            foreach (Type type in worldSensorTypes)
+            {
+                WorldSensorAttribute attr = LCReflect.GetTypeAttr<WorldSensorAttribute>(type);
+                if (attr == null)
+                {
+                    ECSLocate.ECSLog.LogR("有世界信息没有加入特性 >>>>>>", type.Name);
+                    return;
+                }
+
+                IWorldSensor sensor = LCReflect.CreateInstanceByType<IWorldSensor>(type.FullName);
+                WorldSensorDict.Add((int)attr.InfoKey, sensor);
+            }
+
+            //实体信息
+            foreach (Type type in entitySensorTypes)
+            {
+                EntitySensorAttribute attr = LCReflect.GetTypeAttr<EntitySensorAttribute>(type);
+                if (attr == null)
+                {
+                    ECSLocate.ECSLog.LogR("有实体信息没有加入特性 >>>>>>", type.Name);
+                    return;
+                }
+
+                IEntitySensor sensor = LCReflect.CreateInstanceByType<IEntitySensor>(type.FullName);
+                EntitySensorDict.Add((int)attr.InfoKey, sensor);
+            }
         }
 
         public T GetWorldInfo<T>(int key,params object[] data) where T:InfoData

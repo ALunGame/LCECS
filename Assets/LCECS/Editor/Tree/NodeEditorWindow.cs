@@ -5,6 +5,7 @@ using LCECS.Core.Tree.Nodes.Action;
 using LCECS.Core.Tree.Nodes.Control;
 using LCECS.Data;
 using LCECS.Help;
+using LCHelp;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -528,10 +529,10 @@ namespace LCECS.Tree
             List<string> showStrs = new List<string>();
             
             //控制节点
-            List<Type> controlTypes = EDReflectHelp.GetAllClassByClass<NodeControl>();
+            List<Type> controlTypes = LCReflect.GetClassByType<NodeControl>();
             for (int i = 0; i < controlTypes.Count; i++)
             {
-                NodeAttribute nodeAttribute = ReflectHelp.GetTypeAttr<NodeAttribute>(controlTypes[i]);
+                NodeAttribute nodeAttribute = LCReflect.GetTypeAttr<NodeAttribute>(controlTypes[i]);
                 if (nodeAttribute != null)
                 {
                     showStrs.Add("控制节点/"+nodeAttribute.ViewName);
@@ -544,11 +545,11 @@ namespace LCECS.Tree
             }
             
             //行为节点
-            List<Type> actionTypes = EDReflectHelp.GetAllClassByClass<NodeAction>();
+            List<Type> actionTypes = LCReflect.GetClassByType<NodeAction>();
             List<Type> actionShowTypes = new List<Type>();
             for (int i = 0; i < actionTypes.Count; i++)
             {
-                NodeAttribute nodeAttribute = ReflectHelp.GetTypeAttr<NodeAttribute>(actionTypes[i]);
+                NodeAttribute nodeAttribute = LCReflect.GetTypeAttr<NodeAttribute>(actionTypes[i]);
                 if (nodeAttribute==null)
                 {
                     showStrs.Add("基础行为节点/" + nodeAttribute.ViewName);

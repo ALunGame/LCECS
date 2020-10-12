@@ -2,6 +2,7 @@
 using System.Reflection;
 using LCECS.Core.ECS;
 using LCECS.Help;
+using LCHelp;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace LCECS.Scene
         public EntityComView(string comName, FieldInfo[] fieldInfos, BaseCom baseCom)
         {
             ComName = comName;
-            ComAttribute comAttribute = ReflectHelp.GetTypeAttr<ComAttribute>(baseCom.GetType());
+            ComAttribute comAttribute = LCReflect.GetTypeAttr<ComAttribute>(baseCom.GetType());
             if (comAttribute!=null)
             {
                 ComName = comAttribute.ViewName;
@@ -48,7 +49,7 @@ namespace LCECS.Scene
                 FieldInfo info = fieldInfos[i];
                 ComKeyValueView keyValue = new ComKeyValueView(info.Name, info,baseCom);
                 
-                ComValueAttribute comValueAttribute = ReflectHelp.GetFieldAttr<ComValueAttribute>(info);
+                ComValueAttribute comValueAttribute = LCReflect.GetFieldAttr<ComValueAttribute>(info);
                 if (comValueAttribute!=null)
                 {
                     if (comValueAttribute.ViewEditor)
@@ -170,7 +171,7 @@ namespace LCECS.Scene
                         ComKeyValueView info = comView.EditorValueList[j];
                         object valueObj = info.Info.GetValue(info.Com);
                         EDTypeField.CreateTypeField(info.KeyName+"= ",ref valueObj,info.Info.FieldType, width, 20);
-                        ReflectHelp.SetTypeFieldValue(info.Com,info.KeyName,valueObj);
+                        LCReflect.SetTypeFieldValue(info.Com,info.KeyName,valueObj);
                     }
                     
                     //只读值
@@ -219,7 +220,7 @@ namespace LCECS.Scene
             foreach (string comName in entityComs)
             {
                 BaseCom com = entity.GetCom(comName);
-                FieldInfo[] fields = ReflectHelp.GetTypeFieldInfos(com.GetType());
+                FieldInfo[] fields = LCReflect.GetTypeFieldInfos(com.GetType());
 
                 EntityComView comView = new EntityComView(comName,fields,com);
 

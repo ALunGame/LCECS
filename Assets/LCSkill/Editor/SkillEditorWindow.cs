@@ -1,5 +1,6 @@
 ﻿using LCECS;
 using LCECS.Help;
+using LCHelp;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -326,7 +327,7 @@ namespace LCSkill
             EDTypeField.CreateTypeField("技能持续时间:", ref conValue, typeof(double), width, 25);
             SelSkill.ContinueTime = double.Parse(conValue.ToString());
 
-            object value = ReflectHelp.StrChangeToObject(SelSkill.Area, typeof(Vector2));
+            object value = LCConvert.StrChangeToObject(SelSkill.Area, typeof(Vector2).FullName);
             EDTypeField.CreateTypeField("技能范围:", ref value, typeof(Vector2), width, 25);
             SelSkill.Area = value.ToString();
         }
@@ -441,7 +442,7 @@ namespace LCSkill
                         SelSkill.Effects[i].EffectId=int.Parse(idValue.ToString());
 
                         //特效位置
-                        object value = ReflectHelp.StrChangeToObject(SelSkill.Effects[i].Pos, typeof(Vector3));
+                        object value = LCConvert.StrChangeToObject(SelSkill.Effects[i].Pos, typeof(Vector3).FullName);
                         EDTypeField.CreateTypeField("特效位置:", ref value, typeof(Vector3), width, 25);
                         SelSkill.Effects[i].Pos = value.ToString();
 

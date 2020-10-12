@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Demo.Config;
 using Demo.Help;
 using LCECS.Help;
+using LCHelp;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;

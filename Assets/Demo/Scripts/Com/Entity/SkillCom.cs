@@ -1,5 +1,5 @@
 ﻿using LCECS.Core.ECS;
-using LCECS.Help;
+using LCHelp;
 using UnityEngine;
 
 namespace Demo.Com

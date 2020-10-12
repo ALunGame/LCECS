@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 using LCECS.Core.Tree.Base;
 using LCECS.Data;
+using LCHelp;
 
 namespace LCECS.Tree
 {
@@ -130,7 +131,7 @@ namespace LCECS.Tree
                 EDTypeField.CreateLableField("无节点前提:", "", mRect.width, 20);
             else
             {
-                Type premiseType = EDReflectHelp.GetTypeByFullName(Json.Premise.TypeFullName);
+                Type premiseType = LCReflect.GetType(Json.Premise.TypeFullName);
                 if (premiseType == null)
                 {
                     Json.Premise = null;
@@ -156,8 +157,8 @@ namespace LCECS.Tree
                 {
                     NodeKeyValue keyValue = Json.KeyValues[j];
 
-                    object value = ReflectHelp.StrChangeToObject(keyValue.Value, keyValue.TypeFullName);
-                    Type ty = ReflectHelp.GetType(keyValue.TypeFullName);
+                    object value = LCConvert.StrChangeToObject(keyValue.Value, keyValue.TypeFullName);
+                    Type ty = LCReflect.GetType(keyValue.TypeFullName);
                     EDTypeField.CreateTypeField(keyValue.KeyName+"= ",ref value, ty, width-10,20);
 
                     keyValue.Value = value.ToString();
@@ -175,13 +176,13 @@ namespace LCECS.Tree
             };
 
             //前提条件
-            List<Type> premiseTypes = EDReflectHelp.GetAllClassByClass<NodePremise>();
+            List<Type> premiseTypes = LCReflect.GetClassByType<NodePremise>();
             List<Type> premiseShowTypes = new List<Type>();
             for (int i = 0; i < premiseTypes.Count; i++)
             {
                 if (GetPremise(premiseTypes[i].FullName, Json.Premise) != null)
                     continue;
-                NodePremiseAttribute nodeAttribute = ReflectHelp.GetTypeAttr<NodePremiseAttribute>(premiseTypes[i]);
+                NodePremiseAttribute nodeAttribute = LCReflect.GetTypeAttr<NodePremiseAttribute>(premiseTypes[i]);
                 if (nodeAttribute == null || nodeAttribute.GroupName=="")
                 {
                     showStrs.Add("添加前提/默认前提/" + nodeAttribute.ViewName);
@@ -219,7 +220,7 @@ namespace LCECS.Tree
 
                     string viewName = "";
                     Type premiseType = premiseShowTypes[index];
-                    NodePremiseAttribute nodeAttribute = ReflectHelp.GetTypeAttr<NodePremiseAttribute>(premiseType);
+                    NodePremiseAttribute nodeAttribute = LCReflect.GetTypeAttr<NodePremiseAttribute>(premiseType);
                     if (nodeAttribute == null)
                         viewName = premiseType.FullName;
                     else
@@ -245,19 +246,19 @@ namespace LCECS.Tree
 
         private void GetEditorNodeKeyValue()
         {
-            Type nodeType = EDReflectHelp.GetTypeByFullName(Json.TypeFullName);
+            Type nodeType = LCReflect.GetType(Json.TypeFullName);
             
-            FieldInfo[] fields = ReflectHelp.GetTypeFieldInfos(nodeType);
+            FieldInfo[] fields = LCReflect.GetTypeFieldInfos(nodeType);
             
             for (int i = 0; i < fields.Length; i++)
             {
                 FieldInfo info = fields[i];
-                NodeValueAttribute nodeValueAttribute = ReflectHelp.GetFieldAttr<NodeValueAttribute>(info);
+                NodeValueAttribute nodeValueAttribute = LCReflect.GetFieldAttr<NodeValueAttribute>(info);
                 if (nodeValueAttribute!=null)
                 {
                     if (nodeValueAttribute.ViewEditor)
                     {
-                        object defauleValue = ReflectHelp.GeTypeDefaultFieldValue(Json.TypeFullName, info.Name);
+                        object defauleValue = LCReflect.GeTypeDefaultFieldValue(Json.TypeFullName, info.Name);
                         UpdateNodeKeyValue(info, defauleValue);
                     }
                 }

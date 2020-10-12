@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using LCECS.Core.ECS;
+using LCHelp;
 using System;
-using LCECS.Core.ECS;
 
 namespace LCECS.Help
 {
@@ -21,7 +20,7 @@ namespace LCECS.Help
             {
                 return false;
             }
-            ComAttribute comAttribute = ReflectHelp.GetTypeAttr<ComAttribute>(comType);
+            ComAttribute comAttribute = LCReflect.GetTypeAttr<ComAttribute>(comType);
             if (comAttribute==null)
             {
                 return false;

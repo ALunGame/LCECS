@@ -1,6 +1,7 @@
 ﻿using LCECS.Core.ECS;
 using LCECS.Data;
 using LCECS.Help;
+using LCHelp;
 
 using System;
 using UnityEngine;
@@ -18,7 +19,7 @@ namespace LCECS.Server.Factory
 			GameObject entityGo  = data.Length>2?data[2] as GameObject:null;
 
 			//配置数据
-			EntityJson entityData = ECSLocate.Config.GetEntityData(entityName);
+			EntityJson entityData = ECSLayerLocate.Info.GetEntityConf(entityName);
             if (entityData==null)
             {
                 ECSLocate.ECSLog.LogError("实体配置数据不存在>>>>>>>", entityName);
@@ -50,15 +51,15 @@ namespace LCECS.Server.Factory
 			for (int i = 0; i < entityData.Coms.Count; i++)
             {
                 EntityComJson comJson = entityData.Coms[i];
-                BaseCom com  = ReflectHelp.CreateInstanceByType<BaseCom>(comJson.ComName);
+                BaseCom com  = LCReflect.CreateInstanceByType<BaseCom>(comJson.ComName);
 
                 //赋值
                 for (int j = 0; j < comJson.Values.Count; j++)
                 {
                     EntityComValueJson valueJson = comJson.Values[j];
 
-                    object value = ReflectHelp.StrChangeToObject(valueJson.Value, valueJson.Type);
-                    ReflectHelp.SetTypeFieldValue(com, valueJson.Name, value);
+                    object value = LCConvert.StrChangeToObject(valueJson.Value, valueJson.Type);
+                    LCReflect.SetTypeFieldValue(com, valueJson.Name, value);
                 }
 
                 com.Init(entityId,entityGo);

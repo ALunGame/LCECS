@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using LCECS.Help;
+using LCHelp;
 using Demo.Config;
 using System.Collections.Generic;
 using Demo.Help;
@@ -100,7 +101,7 @@ namespace LCTileMap.Window
         private void OnGUI() 
         {
             EDLayout.CreateVertical("box",position.width, position.height,()=>{
-                SelMap=(MapData)EditorGUILayout.ObjectField(SelMap,typeof(MapData));
+                SelMap=(MapData)EditorGUILayout.ObjectField(SelMap,typeof(MapData),true);
                 CurPos=(Vector2Int)EditorGUILayout.Vector2IntField("当前位置",CurPos);
                 TargetPos=(Vector2Int)EditorGUILayout.Vector2IntField("目标位置",TargetPos);
 

@@ -1,6 +1,7 @@
 ﻿using LCECS.Core.ECS;
 using LCECS.Data;
 using LCECS.Help;
+using LCHelp;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -153,10 +154,10 @@ namespace LCECS.Window
                 {
                     //按钮名
                     string btnName = SelEntity.Coms[i].ComName;
-                    Type comType = EDReflectHelp.GetTypeByFullName(SelEntity.Coms[i].ComName);
+                    Type comType = LCReflect.GetType(SelEntity.Coms[i].ComName);
                     if (comType != null)
                     {
-                        ComAttribute comAttribute = ReflectHelp.GetTypeAttr<ComAttribute>(comType);
+                        ComAttribute comAttribute = LCReflect.GetTypeAttr<ComAttribute>(comType);
                         if (comAttribute != null)
                         {
                             btnName = comAttribute.ViewName;
@@ -175,7 +176,7 @@ namespace LCECS.Window
                         {
                             if (index==0)
                             {
-                                SelCom = EDReflectHelp.GetTypeByFullName(SelEntity.Coms[comIndex].ComName);
+                                SelCom = LCReflect.GetType(SelEntity.Coms[comIndex].ComName);
                             }
                             else if (index==1)
                             {
@@ -190,7 +191,7 @@ namespace LCECS.Window
             //添加组件
             EDButton.CreateBtn("添加组件", 200, 50, () =>
             {
-                List<Type> comTyps = EDReflectHelp.GetAllClassByClass<BaseCom>();
+                List<Type> comTyps = LCReflect.GetClassByType<BaseCom>();
                 List<string> showList = new List<string>();
                 List<Type> showTyps = new List<Type>();
                 for (int j = 0; j < comTyps.Count; j++)
@@ -200,7 +201,7 @@ namespace LCECS.Window
                         continue;
                     }
                     showTyps.Add(comTyps[j]);
-                    ComAttribute comAttribute = ReflectHelp.GetTypeAttr<ComAttribute>(comTyps[j]);
+                    ComAttribute comAttribute = LCReflect.GetTypeAttr<ComAttribute>(comTyps[j]);
                     if (comAttribute!=null)
                     {
                         if (comAttribute.GroupName=="")
@@ -258,10 +259,10 @@ namespace LCECS.Window
                 {
                     EntityComValueJson comView = values[i];
                     Type resType = null;
-                    resType = Type.GetType(comView.Type);
+                    resType = LCReflect.GetType(comView.Type);
                     if (resType == null)
-                        resType = EDReflectHelp.GetTypeByFullName(comView.Type);
-                    object value = ReflectHelp.StrChangeToObject(comView.Value, resType);
+                        resType = LCReflect.GetType(comView.Type);
+                    object value = LCConvert.StrChangeToObject(comView.Value, resType.FullName);
                     EDTypeField.CreateTypeField(comView.Name + "= ", ref value, resType, width, 40);
                     SetSelComJson(comView.Name, value.ToString());
                 }
@@ -326,14 +327,14 @@ namespace LCECS.Window
 
         private List<EntityComValueJson> GetSelComEditorValues()
         {
-            FieldInfo[] fields = ReflectHelp.GetTypeFieldInfos(SelCom);
+            FieldInfo[] fields = LCReflect.GetTypeFieldInfos(SelCom);
 
             List<EntityComValueJson> comValues = new List<EntityComValueJson>();
 
             for (int i = 0; i < fields.Length; i++)
             {
                 FieldInfo info = fields[i];
-                ComValueAttribute comValueAttribute = ReflectHelp.GetFieldAttr<ComValueAttribute>(info);
+                ComValueAttribute comValueAttribute = LCReflect.GetFieldAttr<ComValueAttribute>(info);
                 if (comValueAttribute != null)
                 {
                     if (comValueAttribute.ViewEditor)

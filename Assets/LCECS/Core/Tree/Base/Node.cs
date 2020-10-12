@@ -1,4 +1,6 @@
-﻿using LCECS.Help;
+﻿using LCECS.Data;
+using LCECS.Help;
+using LCHelp;
 using System;
 using System.Collections.Generic;
 
@@ -68,6 +70,76 @@ namespace LCECS.Core.Tree.Base
 
         //节点前提
         protected NodePremise nodePremise;
+
+        #region 静态函数
+
+        //创建关系
+        public static void CreateNodeRelation(Node parNode, List<NodeDataJson> childNodes)
+        {
+            if (parNode == null)
+                return;
+
+            if (childNodes == null)
+                return;
+
+            for (int i = 0; i < childNodes.Count; i++)
+            {
+                NodeDataJson childAsset = childNodes[i];
+                Node childNode = CreateNodeInstance(childAsset);
+
+                //递归
+                CreateNodeRelation(childNode, childAsset.ChildNodes);
+
+                if (childNode != null)
+                    parNode.AddChild(childNode);
+            }
+        }
+
+        //创建节点
+        public static Node CreateNodeInstance(NodeDataJson node)
+        {
+            if (string.IsNullOrEmpty(node.TypeFullName))
+                return null;
+
+            Node rootNode = LCReflect.CreateInstanceByType<Node>(node.TypeFullName);
+            rootNode.Init(node.NodeId, node.Type, node.ChildMaxCnt);
+            if (node.Premise != null)
+            {
+                NodePremise premise = LCReflect.CreateInstanceByType<NodePremise>(node.Premise.TypeFullName);
+                premise.Init(rootNode.GetHashCode(), node.Premise.Type, node.Premise.TrueValue);
+
+                if (node.Premise.OtherPremise != null)
+                {
+                    CreateNodePremise(rootNode.GetHashCode(), premise, node.Premise.OtherPremise);
+                }
+
+                rootNode.SetPremise(premise);
+            }
+
+            //属性设置
+            for (int i = 0; i < node.KeyValues.Count; i++)
+            {
+
+                NodeKeyValue keyValue = node.KeyValues[i];
+                object value = LCConvert.StrChangeToObject(keyValue.Value, keyValue.TypeFullName);
+                LCReflect.SetTypeFieldValue(rootNode, keyValue.KeyName, value);
+            }
+            return rootNode;
+        }
+
+        private static void CreateNodePremise(int nodeId, NodePremise premise, NodePremiseJson premiseJson)
+        {
+            if (premiseJson == null)
+                return;
+            NodePremise otherPremise = LCReflect.CreateInstanceByType<NodePremise>(premiseJson.TypeFullName);
+            otherPremise.Init(nodeId, premiseJson.Type);
+            premise.AddOtherPrecondition(otherPremise);
+
+            if (premiseJson.OtherPremise != null)
+                CreateNodePremise(nodeId, otherPremise, premiseJson.OtherPremise);
+        } 
+
+        #endregion
 
         //重写哈希值
         public override int GetHashCode()

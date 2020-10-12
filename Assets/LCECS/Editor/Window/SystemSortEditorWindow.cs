@@ -6,6 +6,7 @@ using LCECS;
 using System.Collections.Generic;
 using System;
 using LCECS.Core.ECS;
+using LCHelp;
 
 public class SystemSortEditorWindow : EditorWindow
 {
@@ -113,11 +114,11 @@ public class SystemSortEditorWindow : EditorWindow
     private List<string> GetSystemList(bool isUpdate)
     {
         List<string> list = new List<string>();
-        List<Type> systemTypes = EDReflectHelp.GetAllClassByClass<BaseSystem>();
+        List<Type> systemTypes = LCReflect.GetClassByType<BaseSystem>();
         for (int i = 0; i < systemTypes.Count; i++)
         {
             Type sysTy = systemTypes[i];
-            SystemAttribute attribute = ReflectHelp.GetTypeAttr<SystemAttribute>(sysTy);
+            SystemAttribute attribute = LCReflect.GetTypeAttr<SystemAttribute>(sysTy);
             if(isUpdate)
             {
                 if (attribute == null || attribute.InFixedUpdate == false)

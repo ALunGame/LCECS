@@ -15,9 +15,13 @@ namespace LCECS
         public static void InitLayerServer()
         {
             Info        = new InfoServer();
+            Info.Init();
             Decision    = new DecisionServer();
+            Decision.Init();
             Request     = new RequestServer();
+            Request.Init();
             Behavior    = new BehaviorServer();
+            Behavior.Init();
         }
     }
 }

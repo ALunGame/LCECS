@@ -1,10 +1,9 @@
-﻿using Demo.Com;
-using Demo.Config;
+﻿using Demo.Config;
 using Demo.Info;
 using LCECS;
 using LCECS.Core.ECS;
 using LCECS.Data;
-using LCECS.Help;
+using LCHelp;
 using UnityEngine;
 
 namespace Demo
@@ -36,6 +35,8 @@ namespace Demo
 
 		private void Update()
         {
+            //时间线
+            TimeLineHelp.Update();
             ComputeVelocity();
             OnClickNormalAttack();
         }
